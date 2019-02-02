@@ -2,7 +2,7 @@
 define("SITE", "Your API Site");
 define("API_KEY", "Your API KEY");
 
-function list_create() {
+function listCreate() {
     $data = array(
         "name" => "Your List",
         "contact" => array(
@@ -46,7 +46,7 @@ function list_create() {
 
 }
 
-function list_member_create($email, $list_id) {
+function listMemberCreate($email, $list_id) {
     $data = array(
         'email_address' => $email,
         'status' => 'subscribed',
@@ -75,7 +75,7 @@ function list_member_create($email, $list_id) {
     }
 }
 
-function campaign_create($list_id) {
+function campaignCreate($list_id) {
     $ch = curl_init(SITE."lists/".$list_id."/segments");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt(
@@ -127,7 +127,7 @@ function campaign_create($list_id) {
     }
 }
 
-function campaign_content_update($campaign_id) {
+function campaignContentUpdate($campaign_id) {
     $content = "Lorem ipsum dolor sit amet, consectetur adipisicing elit,
         sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
         Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
@@ -154,7 +154,7 @@ function campaign_content_update($campaign_id) {
     curl_close($ch);
 }
 
-function campaign_send($campaign_id) {
+function campaignSend($campaign_id) {
     $ch = curl_init(SITE."campaigns/".$campaign_id."/send-checklist");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt(
