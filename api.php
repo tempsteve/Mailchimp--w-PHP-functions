@@ -4,9 +4,9 @@ define("API_KEY", "Your API KEY");
 
 function list_create() {
     $data = array(
-        "name" => "Tempsteve's List",
+        "name" => "Your List",
         "contact" => array(
-           "company" => "Tempsteve",
+           "company" => "YourCompany",
            "address1" => "No. 87, Test Rd.",
            "city" => "Taipei",
            "state" => "TPE",
@@ -15,8 +15,8 @@ function list_create() {
         ),
         "permission_reminder" => "This is a test.",
         "campaign_defaults" => array(
-           "from_name" => "Steve Tsai",
-           "from_email" => "tempsteve1024@gmail.com",
+           "from_name" => "Your Name",
+           "from_email" => "YourEmail@mail.com",
            "subject" => "",
            "language" => "en"
         ),
@@ -100,8 +100,8 @@ function campaign_create($list_id) {
         ),
         'settings' => array(
             'subject_line' => 'The Mailchimp Test Campaign',
-            'reply_to' => 'tempsteve1024@gmail.com',
-            'from_name' => 'Steve Tsai'
+            'reply_to' => 'YourEmail@mail.com',
+            'from_name' => 'Your Name'
         )
     );
     $post_json = json_encode($data);
