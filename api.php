@@ -1,6 +1,6 @@
 <?php
-define("SITE", "https://us20.api.mailchimp.com/3.0/");
-define("API_KEY", "17df9eb12674bfc3fe815580a7244979-us20");
+define("SITE", "Your API Site");
+define("API_KEY", "Your API KEY");
 
 function list_create() {
     $data = array(
@@ -37,8 +37,13 @@ function list_create() {
     );
     $result = curl_exec($ch);
     curl_close($ch);
-    $result_decode = json_decode($result, true);
-    return $result_decode["id"];
+    $result_decode = json_decode($result);
+    if (isset($result_decode->{"id"})) {
+        return $result_decode->{"id"};
+    } else {
+        return false;
+    }
+
 }
 
 function list_member_create($email, $list_id) {
@@ -62,8 +67,8 @@ function list_member_create($email, $list_id) {
     );
     $result = curl_exec($ch);
     curl_close($ch);
-    $result_decode = json_decode($result, true);
-    if (isset($result_decode["email_address"])) {
+    $result_decode = json_decode($result);
+    if (isset($result_decode->{"email_address"})) {
         return true;
     } else {
         return false;
@@ -114,8 +119,12 @@ function campaign_create($list_id) {
     );
     $result = curl_exec($ch);
     curl_close($ch);
-    $result_decode = json_decode($result, true);
-    return $result_decode["id"];
+    $result_decode = json_decode($result);
+    if (isset($result_decode->{"id"})) {
+        return $result_decode->{"id"};
+    } else {
+        return false;
+    }
 }
 
 function campaign_content_update($campaign_id) {
@@ -157,9 +166,9 @@ function campaign_send($campaign_id) {
     );
     $result = curl_exec($ch);
     curl_close($ch);
-    $result_decode = json_decode($result, true);
+    $result_decode = json_decode($result);
 
-    if($result_decode["is_ready"] === true) {
+    if ($result_decode->{"is_ready"} === true) {
         $ch = curl_init(SITE."campaigns/".$campaign_id."/actions/send");
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
