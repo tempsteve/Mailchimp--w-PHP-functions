@@ -11,6 +11,7 @@ if (listMemberCreate($my_mail, $list_id) === true)
 
 // Step 3: add another email addresses to the list
 $email_list = array();
+// Create some random email addresses
 for ($i=0; $i < 10; $i++) {
     array_push($email_list, md5(mt_rand())."@abc.com");
 }

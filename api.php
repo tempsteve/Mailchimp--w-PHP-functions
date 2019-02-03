@@ -5,9 +5,9 @@ define("SITE", "https://".$server[1].".api.mailchimp.com/3.0/");
 
 function curl($method, $route, $postData) {
     $ch = curl_init(SITE.$route);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // Hide response calls
     if ($method == "POST") {
-        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POST, 1); // Define request type is post
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
         curl_setopt(
             $ch,
@@ -18,7 +18,7 @@ function curl($method, $route, $postData) {
             )
         );
     } elseif ($method == "PUT") {
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT"); // Define request type is put
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
         curl_setopt(
             $ch,
@@ -36,6 +36,7 @@ function curl($method, $route, $postData) {
     return $result;
 }
 
+// https://developer.mailchimp.com/documentation/mailchimp/reference/lists
 function listCreate() {
     $data = array(
         "name" => "Your List",
@@ -61,6 +62,7 @@ function listCreate() {
     $result = curl("POST", "lists", $post_json);
     $result_decode = json_decode($result);
 
+    // Check is there "id" in the response, retuen id if true
     if (isset($result_decode->{"id"})) {
         return $result_decode->{"id"};
     } else {
@@ -68,6 +70,7 @@ function listCreate() {
     }
 }
 
+// https://developer.mailchimp.com/documentation/mailchimp/reference/lists/members
 function listMemberCreate($email, $list_id) {
     $data = array(
         'email_address' => $email,
@@ -86,7 +89,11 @@ function listMemberCreate($email, $list_id) {
     }
 }
 
+// https://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/
 function campaignCreate($list_id) {
+    // https://developer.mailchimp.com/documentation/mailchimp/reference/lists/segments/
+    // Get a segment in the created list, and use it when creating the campaign
+    // Or will get "The advanced segment is empty" error
     $result = curl("GET", "lists/".$list_id."/segments", "");
     $result_decode = json_decode($result);
     $segment_id = $result_decode->{"segments"}[0]->{"id"};
@@ -117,6 +124,7 @@ function campaignCreate($list_id) {
     }
 }
 
+// https://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/content
 function campaignContentUpdate($campaign_id) {
     $content = "Lorem ipsum dolor sit amet, consectetur adipisicing elit,
         sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -128,11 +136,15 @@ function campaignContentUpdate($campaign_id) {
          mollit anim id est laborum.";
     $data = array('html' => $content);
     $post_json = json_encode($data);
-
+    // Notice that the method is "PUT", not "POST"
     $result = curl("PUT", "campaigns/".$campaign_id."/content", $post_json);
 }
 
+// https://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/
+// #action-post_campaigns_campaign_id_actions_send
 function campaignSend($campaign_id) {
+    // https://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/send-checklist/
+    // In case of error might happened, get the checklist and make sure it's ready
     $result = curl("GET", "campaigns/".$campaign_id."/send-checklist", "");
     $result_decode = json_decode($result);
 
