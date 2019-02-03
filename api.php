@@ -1,6 +1,40 @@
 <?php
-define("SITE", "Your API Site");
 define("API_KEY", "Your API KEY");
+$server = explode("-", API_KEY);
+define("SITE", "https://".$server[1].".api.mailchimp.com/3.0/");
+
+function curl($method, $route, $postData) {
+    $ch = curl_init(SITE.$route);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    if ($method == "POST") {
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt(
+            $ch,
+            CURLOPT_HTTPHEADER,
+            array(
+                'Content-Type: application/json',
+                'Authorization: apikey '.API_KEY
+            )
+        );
+    } elseif ($method == "PUT") {
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt(
+            $ch,
+            CURLOPT_HTTPHEADER,
+            array(
+                'Content-Type: application/json',
+                'Authorization: apikey '.API_KEY
+            )
+        );
+    } elseif ($method == "GET") {
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: apikey '.API_KEY));
+    }
+    $result = curl_exec($ch);
+    curl_close($ch);
+    return $result;
+}
 
 function listCreate() {
     $data = array(
@@ -23,27 +57,15 @@ function listCreate() {
         "email_type_option" => true
     );
     $post_json = json_encode($data);
-    $ch = curl_init(SITE."lists");
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_json);
-    curl_setopt(
-        $ch,
-        CURLOPT_HTTPHEADER,
-        array(
-            'Content-Type: application/json',
-            'Authorization: apikey '.API_KEY
-        )
-    );
-    $result = curl_exec($ch);
-    curl_close($ch);
+
+    $result = curl("POST", "lists", $post_json);
     $result_decode = json_decode($result);
+
     if (isset($result_decode->{"id"})) {
         return $result_decode->{"id"};
     } else {
         return false;
     }
-
 }
 
 function listMemberCreate($email, $list_id) {
@@ -53,21 +75,10 @@ function listMemberCreate($email, $list_id) {
         'tags' => array('a tag')
     );
     $post_json = json_encode($data);
-    $ch = curl_init(SITE."lists/".$list_id."/members");
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_json);
-    curl_setopt(
-        $ch,
-        CURLOPT_HTTPHEADER,
-        array(
-            'Content-Type: application/json',
-            'Authorization: apikey '.API_KEY
-        )
-    );
-    $result = curl_exec($ch);
-    curl_close($ch);
+
+    $result = curl("POST", "lists/".$list_id."/members", $post_json);
     $result_decode = json_decode($result);
+
     if (isset($result_decode->{"email_address"})) {
         return true;
     } else {
@@ -76,17 +87,7 @@ function listMemberCreate($email, $list_id) {
 }
 
 function campaignCreate($list_id) {
-    $ch = curl_init(SITE."lists/".$list_id."/segments");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt(
-        $ch,
-        CURLOPT_HTTPHEADER,
-        array(
-            'Authorization: apikey '.API_KEY
-        )
-    );
-    $result = curl_exec($ch);
-    curl_close($ch);
+    $result = curl("GET", "lists/".$list_id."/segments", "");
     $result_decode = json_decode($result);
     $segment_id = $result_decode->{"segments"}[0]->{"id"};
 
@@ -105,21 +106,10 @@ function campaignCreate($list_id) {
         )
     );
     $post_json = json_encode($data);
-    $ch = curl_init(SITE."campaigns");
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_json);
-    curl_setopt(
-        $ch,
-        CURLOPT_HTTPHEADER,
-        array(
-            'Content-Type: application/json',
-            'Authorization: apikey '.API_KEY
-        )
-    );
-    $result = curl_exec($ch);
-    curl_close($ch);
+
+    $result = curl("POST", "campaigns", $post_json);
     $result_decode = json_decode($result);
+
     if (isset($result_decode->{"id"})) {
         return $result_decode->{"id"};
     } else {
@@ -138,50 +128,16 @@ function campaignContentUpdate($campaign_id) {
          mollit anim id est laborum.";
     $data = array('html' => $content);
     $post_json = json_encode($data);
-    $ch = curl_init(SITE."campaigns/".$campaign_id."/content");
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_json);
-    curl_setopt(
-        $ch,
-        CURLOPT_HTTPHEADER,
-        array(
-            'Content-Type: application/json',
-            'Authorization: apikey '.API_KEY
-        )
-    );
-    curl_exec($ch);
-    curl_close($ch);
+
+    $result = curl("PUT", "campaigns/".$campaign_id."/content", $post_json);
 }
 
 function campaignSend($campaign_id) {
-    $ch = curl_init(SITE."campaigns/".$campaign_id."/send-checklist");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt(
-        $ch,
-        CURLOPT_HTTPHEADER,
-        array(
-            'Authorization: apikey '.API_KEY
-        )
-    );
-    $result = curl_exec($ch);
-    curl_close($ch);
+    $result = curl("GET", "campaigns/".$campaign_id."/send-checklist", "");
     $result_decode = json_decode($result);
 
     if ($result_decode->{"is_ready"} === true) {
-        $ch = curl_init(SITE."campaigns/".$campaign_id."/actions/send");
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt(
-            $ch,
-            CURLOPT_HTTPHEADER,
-            array(
-                'Authorization: apikey '.API_KEY
-            )
-        );
-        curl_exec($ch);
-        curl_close($ch);
-
+        $result = curl("POST", "campaigns/".$campaign_id."/actions/send", "");
         return true;
     } else {
         echo $result."<br>";
