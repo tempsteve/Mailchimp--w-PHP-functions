@@ -3,7 +3,8 @@ define("API_KEY", "Your API KEY");
 $server = explode("-", API_KEY);
 define("SITE", "https://".$server[1].".api.mailchimp.com/3.0/");
 
-function curl($method, $route, $postData) {
+function curl($method, $route, $postData)
+{
     $ch = curl_init(SITE.$route);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // Hide response calls
     if ($method == "POST") {
@@ -37,7 +38,8 @@ function curl($method, $route, $postData) {
 }
 
 // https://developer.mailchimp.com/documentation/mailchimp/reference/lists
-function listCreate() {
+function listCreate()
+{
     $data = array(
         "name" => "Your List",
         "contact" => array(
@@ -71,7 +73,8 @@ function listCreate() {
 }
 
 // https://developer.mailchimp.com/documentation/mailchimp/reference/lists/members
-function listMemberCreate($email, $list_id) {
+function listMemberCreate($email, $list_id)
+{
     $data = array(
         'email_address' => $email,
         'status' => 'subscribed',
@@ -90,7 +93,8 @@ function listMemberCreate($email, $list_id) {
 }
 
 // https://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/
-function campaignCreate($list_id) {
+function campaignCreate($list_id)
+{
     // https://developer.mailchimp.com/documentation/mailchimp/reference/lists/segments/
     // Get a segment in the created list, and use it when creating the campaign
     // Or will get "The advanced segment is empty" error
@@ -125,7 +129,8 @@ function campaignCreate($list_id) {
 }
 
 // https://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/content
-function campaignContentUpdate($campaign_id) {
+function campaignContentUpdate($campaign_id)
+{
     $content = "Lorem ipsum dolor sit amet, consectetur adipisicing elit,
         sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
         Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
@@ -142,7 +147,8 @@ function campaignContentUpdate($campaign_id) {
 
 // https://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/
 // #action-post_campaigns_campaign_id_actions_send
-function campaignSend($campaign_id) {
+function campaignSend($campaign_id)
+{
     // https://developer.mailchimp.com/documentation/mailchimp/reference/campaigns/send-checklist/
     // In case of error might happened, get the checklist and make sure it's ready
     $result = curl("GET", "campaigns/".$campaign_id."/send-checklist", "");
@@ -156,4 +162,3 @@ function campaignSend($campaign_id) {
         return false;
     }
 }
-?>

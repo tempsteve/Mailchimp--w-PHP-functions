@@ -6,8 +6,9 @@ echo "List ".$list_id." created!<br>";
 
 // Step 2: add my email to the list
 $my_mail = "tempsteve@mail-apps.com";
-if (listMemberCreate($my_mail, $list_id) === true)
+if (listMemberCreate($my_mail, $list_id) === true) {
     echo $my_mail." added!<br>";
+}
 
 // Step 3: add another email addresses to the list
 $email_list = array();
@@ -16,8 +17,9 @@ for ($i=0; $i < 10; $i++) {
     array_push($email_list, md5(mt_rand())."@abc.com");
 }
 foreach ($email_list as $email) {
-    if (listMemberCreate($email, $list_id) === true)
+    if (listMemberCreate($email, $list_id) === true) {
         echo $email." added!<br>";
+    }
 }
 
 // Step 4: create a new campaign
@@ -28,6 +30,6 @@ echo "Campaign ".$campaign_id." created!<br>";
 campaignContentUpdate($campaign_id);
 
 // Step 6: send a campaign email to all the members in the list
-if (campaignSend($campaign_id) === true)
+if (campaignSend($campaign_id) === true) {
     echo "Sent!<br>";
-?>
+}
